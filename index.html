@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Study Guide: Classes, Objects & Comprehensions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Sora:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #4A3F9F;
+    --purple-light: #EEEDFE;
+    --purple-mid: #7F77DD;
+    --teal: #0F6E56;
+    --teal-light: #E1F5EE;
+    --teal-mid: #1D9E75;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --coral: #993C1D;
+    --coral-light: #FAECE7;
+    --gray-dark: #2C2C2A;
+    --gray-mid: #5F5E5A;
+    --gray-light: #F1EFE8;
+    --border: #D3D1C7;
+    --white: #ffffff;
+    --code-bg: #1e1e1e;
+  }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: #f5f4f0;
+    color: var(--gray-dark);
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 2rem 1rem;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--gray-dark);
+    color: white;
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(127,119,221,0.15);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: 60px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(29,158,117,0.1);
+  }
+  .header-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--purple-mid);
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 13px;
+    color: #B4B2A9;
+    max-width: 480px;
+  }
+  .topic-pills {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1.25rem;
+  }
+  .pill {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    padding: 4px 12px; border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .pill.purple { background: #3C3489; color: #CECBF6; }
+  .pill.teal   { background: #085041; color: #9FE1CB; }
+  .pill.amber  { background: #633806; color: #FAC775; }
+
+  /* SECTION HEADERS */
+  .section {
+    margin-bottom: 1.75rem;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .section-num {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .num-purple { background: var(--purple-light); color: var(--purple); }
+  .num-teal   { background: var(--teal-light);   color: var(--teal); }
+  .num-amber  { background: var(--amber-light);  color: var(--amber); }
+  .num-coral  { background: var(--coral-light);  color: var(--coral); }
+
+  .section-title {
+    font-size: 17px; font-weight: 700; color: var(--gray-dark);
+  }
+  .section-subtitle {
+    font-size: 12px; color: var(--gray-mid);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card.purple-accent { border-left: 4px solid var(--purple-mid); border-radius: 0 12px 12px 0; }
+  .card.teal-accent   { border-left: 4px solid var(--teal-mid);   border-radius: 0 12px 12px 0; }
+  .card.amber-accent  { border-left: 4px solid #EF9F27;           border-radius: 0 12px 12px 0; }
+  .card.coral-accent  { border-left: 4px solid #D85A30;           border-radius: 0 12px 12px 0; }
+
+  .concept-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .label-purple { color: var(--purple); }
+  .label-teal   { color: var(--teal); }
+  .label-amber  { color: var(--amber); }
+  .label-coral  { color: var(--coral); }
+
+  .card h3 {
+    font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--gray-dark);
+  }
+  .card p { font-size: 13px; color: var(--gray-mid); line-height: 1.65; }
+
+  /* CODE BLOCKS */
+  pre {
+    background: var(--code-bg);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.75;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+    color: #D3D1C7;
+  }
+  .kw  { color: #AFA9EC; }
+  .fn  { color: #5DCAA5; }
+  .st  { color: #FAC775; }
+  .cm  { color: #5F5E5A; font-style: italic; }
+  .num { color: #F0997B; }
+  .self { color: #9FE1CB; }
+
+  /* TWO-COL LAYOUT */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    margin: 0.75rem 0;
+  }
+  .compare-table th {
+    text-align: left; padding: 8px 12px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+    color: var(--gray-mid);
+  }
+  .compare-table td {
+    padding: 8px 12px; border-bottom: 1px solid #ece9e3;
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--purple); }
+  .compare-table td code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+    background: var(--gray-light); padding: 1px 5px; border-radius: 4px;
+  }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid #ece9e3; font-size: 13px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 16px; height: 16px; border: 1.5px solid var(--border);
+    border-radius: 4px; flex-shrink: 0; margin-top: 2px;
+  }
+
+  /* GOTCHA / TIP BOXES */
+  .tip-box {
+    border-radius: 10px; padding: 0.875rem 1.125rem; margin: 0.75rem 0;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .tip-box.gotcha { background: var(--coral-light); }
+  .tip-box.tip    { background: var(--teal-light);  }
+  .tip-box.note   { background: var(--purple-light); }
+  .tip-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .tip-box p { font-size: 12.5px; line-height: 1.6; }
+  .tip-box.gotcha p { color: #4A1B0C; }
+  .tip-box.tip    p { color: #04342C; }
+  .tip-box.note   p { color: #26215C; }
+  .tip-label { font-weight: 700; margin-right: 4px; }
+
+  /* QUICK REF */
+  .quick-ref {
+    background: var(--gray-dark);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .quick-ref h3 { color: white; font-size: 14px; font-weight: 600; margin-bottom: 1rem; }
+  .qr-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 640px) { .qr-grid { grid-template-columns: 1fr; } }
+  .qr-item {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .qr-label { font-size: 10px; color: #888780; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .qr-code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #9FE1CB; }
+
+  /* PRACTICE SECTION */
+  .practice-card {
+    background: var(--purple-light);
+    border: 1px solid #CECBF6;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .practice-card h3 { font-size: 14px; font-weight: 600; color: var(--purple); margin-bottom: 10px; }
+  .exercise {
+    background: white; border: 1px solid #CECBF6;
+    border-radius: 8px; padding: 0.875rem 1rem; margin-bottom: 8px;
+  }
+  .ex-num { font-size: 11px; font-weight: 700; color: var(--purple-mid); margin-bottom: 4px; letter-spacing: 0.05em; }
+  .exercise p { font-size: 13px; color: var(--gray-dark); }
+
+  /* DIVIDER */
+  .divider {
+    border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center; font-size: 12px; color: var(--gray-mid);
+    padding: 1.5rem 0 0;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { max-width: 100%; }
+    .header { border-radius: 0 0 16px 16px; }
+    pre { font-size: 11px; }
+    .two-col { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <p class="header-tag">CPSC-223P &nbsp;|&nbsp; Python Programming</p>
+    <h1>Classes, Objects &amp;<br>Comprehensions</h1>
+    <p>Everything you need to know for this unit. Read top to bottom, code along as you go.</p>
+    <div class="topic-pills">
+      <span class="pill purple">Classes</span>
+      <span class="pill teal">Objects</span>
+      <span class="pill amber">Comprehensions</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: CLASS ANATOMY -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num num-purple">1</div>
+      <div>
+        <div class="section-title">Anatomy of a Class</div>
+        <div class="section-subtitle">The blueprint — nothing real exists yet</div>
+      </div>
+    </div>
+
+    <div class="card purple-accent">
+      <p class="concept-label label-purple">Core Idea</p>
+      <h3>A class is a template</h3>
+      <p>You define what data (attributes) and actions (methods) instances of that class will have. Think of it like a form — you design the form fields, not the filled-in answers.</p>
+    </div>
+
+    <pre><span class="kw">class</span> <span class="fn">Student</span>:
+    <span class="cm"># __init__ runs automatically when you create an object</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="self">self</span>, name, grade):
+        <span class="self">self</span>.name  = name    <span class="cm"># attribute: stores the name</span>
+        <span class="self">self</span>.grade = grade   <span class="cm"># attribute: stores the grade</span>
+
+    <span class="cm"># a method: an action the object can perform</span>
+    <span class="kw">def</span> <span class="fn">is_passing</span>(<span class="self">self</span>):
+        <span class="kw">return</span> <span class="self">self</span>.grade >= <span class="num">60</span>
+
+    <span class="kw">def</span> <span class="fn">greet</span>(<span class="self">self</span>):
+        <span class="kw">print</span>(<span class="st">f"Hi, I am {<span class="self">self</span>.name}!"</span>)</pre>
+
+    <div class="two-col">
+      <div class="tip-box note">
+        <div class="tip-icon">&#128161;</div>
+        <p><span class="tip-label">self</span> is a reference to the object itself. Every method must take it as the first parameter. You never pass it in manually — Python handles that.</p>
+      </div>
+      <div class="tip-box gotcha">
+        <div class="tip-icon">&#9888;</div>
+        <p><span class="tip-label">Common mistake:</span> Forgetting self inside a method. Writing <code>name</code> instead of <code>self.name</code> will cause a NameError.</p>
+      </div>
+    </div>
+
+    <table class="compare-table" style="margin-top:0.5rem;">
+      <tr><th>Part</th><th>What it is</th><th>Example</th></tr>
+      <tr><td>class</td><td>keyword that starts the blueprint</td><td><code>class Student:</code></td></tr>
+      <tr><td>__init__</td><td>runs on creation, sets up attributes</td><td><code>def __init__(self, name):</code></td></tr>
+      <tr><td>self.x</td><td>an attribute tied to this specific object</td><td><code>self.name = name</code></td></tr>
+      <tr><td>method</td><td>a function defined inside the class</td><td><code>def greet(self):</code></td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2: OBJECTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num num-teal">2</div>
+      <div>
+        <div class="section-title">Creating Objects</div>
+        <div class="section-subtitle">Instances — the real things built from the blueprint</div>
+      </div>
+    </div>
+
+    <div class="card teal-accent">
+      <p class="concept-label label-teal">Core Idea</p>
+      <h3>An object is one filled-in copy</h3>
+      <p>You call the class like a function to create an object. Each object has its own copy of the attributes but shares the same methods. You can create as many as you want.</p>
+    </div>
+
+    <pre><span class="cm"># Create two separate Student objects</span>
+s1 = <span class="fn">Student</span>(<span class="st">"Priya"</span>, <span class="num">91</span>)
+s2 = <span class="fn">Student</span>(<span class="st">"Jake"</span>, <span class="num">55</span>)
+
+<span class="cm"># Access attributes with dot notation</span>
+<span class="kw">print</span>(s1.name)          <span class="cm"># "Priya"</span>
+<span class="kw">print</span>(s2.grade)         <span class="cm"># 55</span>
+
+<span class="cm"># Call methods</span>
+s1.<span class="fn">greet</span>()              <span class="cm"># Hi, I am Priya!</span>
+<span class="kw">print</span>(s2.<span class="fn">is_passing</span>())  <span class="cm"># False</span>
+
+<span class="cm"># You can change attributes after creation</span>
+s2.grade = <span class="num">65</span>
+<span class="kw">print</span>(s2.<span class="fn">is_passing</span>())  <span class="cm"># True</span></pre>
+
+    <div class="tip-box tip">
+      <div class="tip-icon">&#10003;</div>
+      <p><span class="tip-label">Remember:</span> s1.name and s2.name are completely separate. Changing one does not affect the other. Each object owns its own data.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 3: COMPREHENSIONS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num num-amber">3</div>
+      <div>
+        <div class="section-title">List Comprehensions</div>
+        <div class="section-subtitle">Build lists in one clean line</div>
+      </div>
+    </div>
+
+    <div class="card amber-accent">
+      <p class="concept-label label-amber">Core Idea</p>
+      <h3>A compact for-loop that produces a list</h3>
+      <p>The pattern is always: <strong>[expression for item in iterable if condition]</strong>. The <em>if condition</em> part is optional — use it only when you want to filter.</p>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <p style="font-size:12px; font-weight:600; color:var(--gray-mid); margin-bottom:6px;">REGULAR LOOP</p>
+        <pre style="font-size:11.5px;"><span class="cm"># Filter grades above 60</span>
+grades = [<span class="num">91</span>, <span class="num">78</span>, <span class="num">55</span>, <span class="num">83</span>, <span class="num">47</span>]
+high = []
+<span class="kw">for</span> g <span class="kw">in</span> grades:
+    <span class="kw">if</span> g >= <span class="num">60</span>:
+        high.append(g)
+<span class="cm"># [91, 78, 83]</span></pre>
+      </div>
+      <div>
+        <p style="font-size:12px; font-weight:600; color:var(--gray-mid); margin-bottom:6px;">COMPREHENSION</p>
+        <pre style="font-size:11.5px;"><span class="cm"># Same result, one line</span>
+grades = [<span class="num">91</span>, <span class="num">78</span>, <span class="num">55</span>, <span class="num">83</span>, <span class="num">47</span>]
+
+
+
+high = [g <span class="kw">for</span> g <span class="kw">in</span> grades
+        <span class="kw">if</span> g >= <span class="num">60</span>]
+<span class="cm"># [91, 78, 83]</span></pre>
+      </div>
+    </div>
+
+    <pre><span class="cm"># Transform: square every number</span>
+squares = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> range(<span class="num">5</span>)]
+<span class="cm"># [0, 1, 4, 9, 16]</span>
+
+<span class="cm"># Filter: keep only even numbers</span>
+evens = [x <span class="kw">for</span> x <span class="kw">in</span> range(<span class="num">10</span>) <span class="kw">if</span> x % <span class="num">2</span> == <span class="num">0</span>]
+<span class="cm"># [0, 2, 4, 6, 8]</span>
+
+<span class="cm"># Transform + filter at once</span>
+big_squares = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> range(<span class="num">10</span>) <span class="kw">if</span> x > <span class="num">5</span>]
+<span class="cm"># [36, 49, 64, 81]</span>
+
+<span class="cm"># Works on strings too</span>
+names = [<span class="st">"priya"</span>, <span class="st">"jake"</span>, <span class="st">"mia"</span>]
+upper = [n.<span class="fn">upper</span>() <span class="kw">for</span> n <span class="kw">in</span> names]
+<span class="cm"># ["PRIYA", "JAKE", "MIA"]</span></pre>
+
+    <div class="tip-box gotcha">
+      <div class="tip-icon">&#9888;</div>
+      <p><span class="tip-label">Avoid nesting too deep:</span> A comprehension with two for-loops is fine, but three levels gets unreadable fast. If it's getting long, use a regular loop instead.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 4: COMBINING BOTH -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num num-coral">4</div>
+      <div>
+        <div class="section-title">Classes + Comprehensions Together</div>
+        <div class="section-subtitle">Where both concepts click into place</div>
+      </div>
+    </div>
+
+    <div class="card coral-accent">
+      <p class="concept-label label-coral">Core Idea</p>
+      <h3>Comprehensions work on lists of objects</h3>
+      <p>You can store objects in a list and then use a comprehension to pull out attributes, filter by method results, or transform data across all of them in one line.</p>
+    </div>
+
+    <pre><span class="cm"># List of objects</span>
+students = [
+    <span class="fn">Student</span>(<span class="st">"Priya"</span>, <span class="num">91</span>),
+    <span class="fn">Student</span>(<span class="st">"Jake"</span>, <span class="num">55</span>),
+    <span class="fn">Student</span>(<span class="st">"Mia"</span>,  <span class="num">73</span>),
+    <span class="fn">Student</span>(<span class="st">"Leo"</span>,  <span class="num">48</span>),
+]
+
+<span class="cm"># Get all names</span>
+names = [s.name <span class="kw">for</span> s <span class="kw">in</span> students]
+<span class="cm"># ["Priya", "Jake", "Mia", "Leo"]</span>
+
+<span class="cm"># Get names of students who are passing</span>
+passing = [s.name <span class="kw">for</span> s <span class="kw">in</span> students <span class="kw">if</span> s.<span class="fn">is_passing</span>()]
+<span class="cm"># ["Priya", "Mia"]</span>
+
+<span class="cm"># Get all grades as a list</span>
+all_grades = [s.grade <span class="kw">for</span> s <span class="kw">in</span> students]
+<span class="cm"># [91, 55, 73, 48]</span>
+
+<span class="cm"># Compute average using sum + len</span>
+avg = <span class="fn">sum</span>([s.grade <span class="kw">for</span> s <span class="kw">in</span> students]) / <span class="fn">len</span>(students)
+<span class="cm"># 66.75</span></pre>
+  </div>
+
+  <hr class="divider">
+
+  <!-- QUICK REFERENCE -->
+  <div class="quick-ref">
+    <h3>Quick Reference</h3>
+    <div class="qr-grid">
+      <div class="qr-item">
+        <div class="qr-label">Define a class</div>
+        <div class="qr-code">class MyClass:</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Create an object</div>
+        <div class="qr-code">obj = MyClass(args)</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Access attribute</div>
+        <div class="qr-code">obj.attribute</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Call a method</div>
+        <div class="qr-code">obj.method()</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Basic comprehension</div>
+        <div class="qr-code">[x for x in list]</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Comprehension + filter</div>
+        <div class="qr-code">[x for x in list if cond]</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Comprehension + transform</div>
+        <div class="qr-code">[f(x) for x in list]</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">Objects + comprehension</div>
+        <div class="qr-code">[o.attr for o in objs]</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- PRACTICE PROBLEMS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num num-purple">5</div>
+      <div>
+        <div class="section-title">Practice Problems</div>
+        <div class="section-subtitle">Try these before your next class</div>
+      </div>
+    </div>
+
+    <div class="practice-card">
+      <h3>Starter (Classes &amp; Objects)</h3>
+      <div class="exercise">
+        <div class="ex-num">EXERCISE 1</div>
+        <p>Write a class called <code>Book</code> with attributes <code>title</code>, <code>author</code>, and <code>pages</code>. Add a method <code>is_long()</code> that returns True if the book has more than 300 pages. Create three Book objects and print which ones are long.</p>
+      </div>
+      <div class="exercise">
+        <div class="ex-num">EXERCISE 2</div>
+        <p>Write a class called <code>Rectangle</code> with <code>width</code> and <code>height</code>. Add methods <code>area()</code> and <code>perimeter()</code>. Create two rectangles and print both values for each.</p>
+      </div>
+    </div>
+
+    <div class="practice-card">
+      <h3>Intermediate (Comprehensions)</h3>
+      <div class="exercise">
+        <div class="ex-num">EXERCISE 3</div>
+        <p>Given <code>nums = [3, 7, 2, 9, 4, 11, 6]</code>, use a comprehension to: (a) get all numbers greater than 5, (b) get the square of every number, (c) get squares of numbers greater than 5.</p>
+      </div>
+      <div class="exercise">
+        <div class="ex-num">EXERCISE 4</div>
+        <p>Given a list of words, use a comprehension to return only the words that start with a vowel. Hint: check <code>word[0].lower() in "aeiou"</code>.</p>
+      </div>
+    </div>
+
+    <div class="practice-card">
+      <h3>Combined (Classes + Comprehensions)</h3>
+      <div class="exercise">
+        <div class="ex-num">EXERCISE 5</div>
+        <p>Create a list of 5 <code>Book</code> objects. Use comprehensions to: (a) get all titles, (b) get titles of only long books, (c) compute the average number of pages.</p>
+      </div>
+      <div class="exercise">
+        <div class="ex-num">EXERCISE 6</div>
+        <p>Create a <code>Product</code> class with <code>name</code> and <code>price</code>. Create 6 products. Use comprehensions to: (a) get names of products under $20, (b) apply a 10% discount to all prices and return the new list.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="card">
+    <p class="concept-label label-purple">Self-Check</p>
+    <h3 style="margin-bottom:10px;">Can you do all of these?</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Write a class with __init__, at least two attributes, and one method</span></li>
+      <li><div class="check-box"></div><span>Create multiple objects from the same class and access their attributes</span></li>
+      <li><div class="check-box"></div><span>Explain what self refers to in a method</span></li>
+      <li><div class="check-box"></div><span>Write a list comprehension that filters a list</span></li>
+      <li><div class="check-box"></div><span>Write a list comprehension that transforms a list</span></li>
+      <li><div class="check-box"></div><span>Use a comprehension on a list of objects to extract one attribute</span></li>
+      <li><div class="check-box"></div><span>Combine filter + transform in a single comprehension</span></li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p>CPSC-223P &nbsp;|&nbsp; Python Programming &nbsp;|&nbsp; Cal State Fullerton</p>
+  </div>
+
+</div>
+</body>
+</html>
